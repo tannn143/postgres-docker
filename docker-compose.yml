@@ -1,0 +1,29 @@
+version: '3.7'
+
+services:
+  db:
+    image: postgres:9.5
+    environment:
+      POSTGRES_USER: ssbase
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+    secrets:
+      - postgres_password
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "tan"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    restart: on-failure
+    deploy:
+      restart_policy:
+        condition: on-failure
+    stdin_open: true
+    tty: true
+    ports:
+      - 15432:5432
+    volumes:
+      - ./data:/var/lib/postgresql/data 
+    
+secrets:
+  postgres_password:
+    file: ./POSTGRES_PASSWORD
